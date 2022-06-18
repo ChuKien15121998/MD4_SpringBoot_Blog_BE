@@ -2,8 +2,8 @@ package com.codegym.controller;
 
 import com.codegym.model.Blog;
 import com.codegym.model.Category;
-import com.codegym.service.blog.IBlogService;
-import com.codegym.service.category.ICategoryService;
+import com.codegym.service.IBlogService;
+import com.codegym.service.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

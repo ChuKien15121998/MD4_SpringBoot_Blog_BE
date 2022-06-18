@@ -1,14 +1,15 @@
-package com.codegym.service.category;
+package com.codegym.service.impl;
 
 import com.codegym.model.Category;
 import com.codegym.repository.ICategotyRepository;
+import com.codegym.service.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class CategoryService implements ICategoryService{
+public class CategoryService implements ICategoryService {
 
     @Autowired
     private ICategotyRepository categoryRepository;
