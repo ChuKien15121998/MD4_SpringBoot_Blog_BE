@@ -1,5 +1,6 @@
 package com.codegym.service;
 
+import com.codegym.model.Blog;
 import com.codegym.model.Users;
 import java.util.Optional;
 
@@ -8,4 +9,7 @@ public interface IUserService extends IGeneralService<Users> {
     Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
     Users save(Users users);
+    Iterable<Users> findAllByNameContaining(String name);
+    Iterable<Users> getNext3User(int row);
+    Iterable<Users> getTop3();
 }

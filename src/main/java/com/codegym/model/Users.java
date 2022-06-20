@@ -55,6 +55,23 @@ public class Users {
         this.roles = roles;
     }
 
+    public Users(String name, String username, String email, String password, String avatar, Set<Role> roles) {
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.avatar = avatar;
+        this.roles = roles;
+    }
+
+    public Users(String name, String username, String email, String avatar, Set<Role> roles) {
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.avatar = avatar;
+        this.roles = roles;
+    }
+
     public Users(   @NotBlank
                     @Size(min = 3, max = 50) String name,
                     @NotBlank

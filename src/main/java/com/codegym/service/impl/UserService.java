@@ -44,6 +44,21 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public Iterable<Users> findAllByNameContaining(String name) {
+        return userRepository.findAllByNameContaining(name);
+    }
+
+    @Override
+    public Iterable<Users> getNext3User(int row) {
+        return userRepository.getNext3User(row);
+    }
+
+    @Override
+    public Iterable<Users> getTop3() {
+        return userRepository.getTop3();
+    }
+
+    @Override
     public void remove(Long id) {
         userRepository.deleteById(id);
     }
