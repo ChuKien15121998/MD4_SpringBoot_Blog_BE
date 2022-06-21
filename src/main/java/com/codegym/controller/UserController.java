@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -54,9 +55,15 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/search/{name}")
+    @GetMapping("/search-name/{name}")
     public ResponseEntity<Iterable<Users>> findByName(@PathVariable String name) {
         Iterable<Users> users = userService.findAllByNameContaining(name);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/search-username/{username}")
+    public ResponseEntity<Optional<Users>> findByUserName(@PathVariable String username) {
+        Optional<Users> users = userService.findByUsername(username);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -66,7 +73,9 @@ public class UserController {
         usersOptional.get().setName(changeUserDetail.getName());
         usersOptional.get().setUsername(changeUserDetail.getUsername());
         usersOptional.get().setEmail(changeUserDetail.getEmail());
-        usersOptional.get().setAvatar(changeUserDetail.getAvatar());
+        if(changeUserDetail.getAvatar() != "") {
+            usersOptional.get().setAvatar(changeUserDetail.getAvatar());
+        }
         String strRoles = changeUserDetail.getRole();
         Set<Role> roles = new HashSet<>();
         switch (strRoles){
@@ -85,6 +94,7 @@ public class UserController {
         }
         usersOptional.get().setRoles(roles);
         userService.save(usersOptional.get());
+        System.out.println(usersOptional.get().toString());
         return new ResponseEntity<>(new ResponseMessage("yes"), HttpStatus.OK);
     }
 

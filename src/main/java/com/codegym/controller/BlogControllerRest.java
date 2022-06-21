@@ -84,6 +84,9 @@ public class BlogControllerRest {
     @PutMapping("/{id}")
     public ResponseEntity<Blog> edit(@RequestBody Blog blog, @PathVariable Long id) {
         Optional<Blog> blogOptional = blogService.findById(id);
+        if(blog.getImage() != "") {
+            blog.setImage(blogOptional.get().getImage());
+        }
         blog.setId(id);
         blog.setDate(blogOptional.get().getDate());
         blogService.save(blog);
