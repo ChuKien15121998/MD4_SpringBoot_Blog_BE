@@ -1,19 +1,24 @@
 package com.codegym.controller;
 
+import com.codegym.dto.request.ChangeAvatar;
 import com.codegym.dto.request.ChangeUserDetailForm;
 import com.codegym.dto.response.ResponseMessage;
 import com.codegym.model.Role;
 import com.codegym.model.RoleName;
 import com.codegym.model.Users;
+import com.codegym.security.jwt.JwtProvider;
+import com.codegym.security.jwt.JwtTokenFilter;
 import com.codegym.service.IUserService;
 import com.codegym.service.impl.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -30,6 +35,12 @@ public class UserController {
 
     @Autowired
     RoleService roleService;
+
+    @Autowired
+    JwtTokenFilter jwtTokenFilter;
+
+    @Autowired
+    JwtProvider jwtProvider;
 
     @GetMapping
     public ResponseEntity<Iterable<Users>> findAll() {
@@ -73,22 +84,22 @@ public class UserController {
         usersOptional.get().setName(changeUserDetail.getName());
         usersOptional.get().setUsername(changeUserDetail.getUsername());
         usersOptional.get().setEmail(changeUserDetail.getEmail());
-        if(changeUserDetail.getAvatar() != "") {
+        if (changeUserDetail.getAvatar() != "") {
             usersOptional.get().setAvatar(changeUserDetail.getAvatar());
         }
         String strRoles = changeUserDetail.getRole();
         Set<Role> roles = new HashSet<>();
-        switch (strRoles){
+        switch (strRoles) {
             case "admin":
-                Role adminRole = roleService.findByName(RoleName.ADMIN).orElseThrow(()-> new RuntimeException("Role not found"));
+                Role adminRole = roleService.findByName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("Role not found"));
                 roles.add(adminRole);
                 break;
             case "pm":
-                Role pmRole = roleService.findByName(RoleName.PM).orElseThrow(()-> new RuntimeException("Roel not found"));
+                Role pmRole = roleService.findByName(RoleName.PM).orElseThrow(() -> new RuntimeException("Roel not found"));
                 roles.add(pmRole);
                 break;
             case "user":
-                Role userRole = roleService.findByName(RoleName.USER).orElseThrow(()-> new RuntimeException("Roel not found"));
+                Role userRole = roleService.findByName(RoleName.USER).orElseThrow(() -> new RuntimeException("Roel not found"));
                 roles.add(userRole);
                 break;
         }
@@ -106,5 +117,24 @@ public class UserController {
         }
         userService.remove(id);
         return new ResponseEntity<>(new ResponseMessage("Delete Success!"), HttpStatus.OK);
+    }
+
+    @PutMapping("/change-avatar")
+    public ResponseEntity<?> changeAvatar(HttpServletRequest request, @Valid @RequestBody ChangeAvatar changeAvatar){
+        String jgiwt = jwtTokenFilter.getJwt(request);
+        String username = jwtProvider.getUserNameFromToken(jwt);
+        Users user;
+        try {
+            if(changeAvatar.getAvatar()==null){
+                return new ResponseEntity<>(new ResponseMessage("no"), HttpStatus.OK);
+            } else {
+                user = userService.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User Not Found -> username"+username));
+                user.setAvatar(changeAvatar.getAvatar());
+                userService.save(user);
+            }
+            return new ResponseEntity<>(new ResponseMessage("yes"), HttpStatus.OK);
+        } catch (UsernameNotFoundException exception){
+            return new ResponseEntity<>(new ResponseMessage(exception.getMessage()), HttpStatus.NOT_FOUND);
+        }
     }
 }
