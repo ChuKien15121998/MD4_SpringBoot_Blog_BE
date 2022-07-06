@@ -121,7 +121,7 @@ public class UserController {
 
     @PutMapping("/change-avatar")
     public ResponseEntity<?> changeAvatar(HttpServletRequest request, @Valid @RequestBody ChangeAvatar changeAvatar){
-        String jgiwt = jwtTokenFilter.getJwt(request);
+        String jwt = jwtTokenFilter.getJwt(request);
         String username = jwtProvider.getUserNameFromToken(jwt);
         Users user;
         try {
