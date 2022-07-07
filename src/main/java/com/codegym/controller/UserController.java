@@ -1,7 +1,7 @@
 package com.codegym.controller;
 
 import com.codegym.dto.request.ChangeAvatar;
-import com.codegym.dto.request.ChangeUserDetailForm;
+import com.codegym.dto.request.ChangeProfileForm;
 import com.codegym.dto.response.ResponseMessage;
 import com.codegym.model.Role;
 import com.codegym.model.RoleName;
@@ -78,36 +78,36 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> edit(@RequestBody ChangeUserDetailForm changeUserDetail, @PathVariable Long id) {
-        Optional<Users> usersOptional = userService.findById(id);
-        usersOptional.get().setName(changeUserDetail.getName());
-        usersOptional.get().setUsername(changeUserDetail.getUsername());
-        usersOptional.get().setEmail(changeUserDetail.getEmail());
-        if (changeUserDetail.getAvatar() != "") {
-            usersOptional.get().setAvatar(changeUserDetail.getAvatar());
-        }
-        String strRoles = changeUserDetail.getRole();
-        Set<Role> roles = new HashSet<>();
-        switch (strRoles) {
-            case "admin":
-                Role adminRole = roleService.findByName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("Role not found"));
-                roles.add(adminRole);
-                break;
-            case "pm":
-                Role pmRole = roleService.findByName(RoleName.PM).orElseThrow(() -> new RuntimeException("Roel not found"));
-                roles.add(pmRole);
-                break;
-            case "user":
-                Role userRole = roleService.findByName(RoleName.USER).orElseThrow(() -> new RuntimeException("Roel not found"));
-                roles.add(userRole);
-                break;
-        }
-        usersOptional.get().setRoles(roles);
-        userService.save(usersOptional.get());
-        System.out.println(usersOptional.get().toString());
-        return new ResponseEntity<>(new ResponseMessage("yes"), HttpStatus.OK);
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<?> edit(@RequestBody ChangeProfileForm changeUserDetail, @PathVariable Long id) {
+//        Optional<Users> usersOptional = userService.findById(id);
+//        usersOptional.get().setName(changeUserDetail.getName());
+//        usersOptional.get().setUsername(changeUserDetail.getUsername());
+//        usersOptional.get().setEmail(changeUserDetail.getEmail());
+//        if (changeUserDetail.getAvatar() != "") {
+//            usersOptional.get().setAvatar(changeUserDetail.getAvatar());
+//        }
+//        String strRoles = changeUserDetail.getRole();
+//        Set<Role> roles = new HashSet<>();
+//        switch (strRoles) {
+//            case "admin":
+//                Role adminRole = roleService.findByName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("Role not found"));
+//                roles.add(adminRole);
+//                break;
+//            case "pm":
+//                Role pmRole = roleService.findByName(RoleName.PM).orElseThrow(() -> new RuntimeException("Roel not found"));
+//                roles.add(pmRole);
+//                break;
+//            case "user":
+//                Role userRole = roleService.findByName(RoleName.USER).orElseThrow(() -> new RuntimeException("Roel not found"));
+//                roles.add(userRole);
+//                break;
+//        }
+//        usersOptional.get().setRoles(roles);
+//        userService.save(usersOptional.get());
+//        System.out.println(usersOptional.get().toString());
+//        return new ResponseEntity<>(new ResponseMessage("yes"), HttpStatus.OK);
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
@@ -134,6 +134,46 @@ public class UserController {
             }
             return new ResponseEntity<>(new ResponseMessage("yes"), HttpStatus.OK);
         } catch (UsernameNotFoundException exception){
+            return new ResponseEntity<>(new ResponseMessage(exception.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/change-profile")
+    public ResponseEntity<?> changeProfile(HttpServletRequest request, @Valid @RequestBody ChangeProfileForm changeProfileForm) {
+        String jwt = jwtTokenFilter.getJwt(request);
+        String username = jwtProvider.getUserNameFromToken(jwt);
+        Users user;
+        try {
+            if (userService.checkExistsByUsername(changeProfileForm.getUsername())) {
+                return new ResponseEntity<>(new ResponseMessage("nouser"), HttpStatus.OK);
+            }
+
+            if (userService.checkExistsByEmail(changeProfileForm.getEmail())) {
+                return new ResponseEntity<>(new ResponseMessage("noemail"), HttpStatus.OK);
+            }
+            user = userService.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User Not Found with -> username" + username));
+            user.setName(changeProfileForm.getName());
+            if (user.getUsername().equals(changeProfileForm.getUsername())){
+                user.setUsername(changeProfileForm.getUsername());
+            }else {
+                if (userService.existsByUsername(changeProfileForm.getUsername())) {
+                    return new ResponseEntity<>(new ResponseMessage("nouser"), HttpStatus.OK);
+                }else {
+                    user.setUsername(changeProfileForm.getUsername());
+                }
+            }
+            if (user.getEmail().equals(changeProfileForm.getEmail())){
+                user.setEmail(changeProfileForm.getEmail());
+            }else {
+                if (userService.existsByEmail(changeProfileForm.getEmail())) {
+                    return new ResponseEntity<>(new ResponseMessage("noemail"), HttpStatus.OK);
+                }else {
+                    user.setEmail(changeProfileForm.getEmail());
+                }
+            }
+            userService.save(user);
+            return new ResponseEntity<>(new ResponseMessage("yes"), HttpStatus.OK);
+        } catch (UsernameNotFoundException exception) {
             return new ResponseEntity<>(new ResponseMessage(exception.getMessage()), HttpStatus.NOT_FOUND);
         }
     }

@@ -13,7 +13,12 @@ import java.util.Optional;
 public interface IUserRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByUsername(String name); //Tim kiem User co ton tai trong DB khong?
     Boolean existsByUsername(String username);
+
+    @Query(value = "select * from users where username not like :username", nativeQuery = true)
+    Iterable<Users> checkExistsByUsername(String username);
     Boolean existsByEmail(String email);
+    @Query(value = "select * from users where email not like :email", nativeQuery = true)
+    Iterable<Users> checkExistsByEmail(String email);
     Iterable<Users> findAllByNameContaining(String name);
     @Query(value = "select * from users limit ?, 3", nativeQuery = true)
     Iterable<Users> getNext3User(int row);

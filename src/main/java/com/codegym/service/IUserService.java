@@ -12,4 +12,8 @@ public interface IUserService extends IGeneralService<Users> {
     Iterable<Users> findAllByNameContaining(String name);
     Iterable<Users> getNext3User(int row);
     Iterable<Users> getTop3();
+    Boolean checkExistsByUsername(String username);
+    Boolean checkExistsByEmail(String email);
+    Iterable<Users> listExistsByUsername(String username);
+
 }

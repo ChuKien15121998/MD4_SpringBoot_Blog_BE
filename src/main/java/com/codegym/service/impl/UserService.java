@@ -58,6 +58,32 @@ public class UserService implements IUserService {
         return userRepository.getTop3();
     }
 
+    public Boolean checkExistsByUsername(String username) {
+        Iterable<Users> users = userRepository.checkExistsByUsername(username);
+        for (Users user: users) {
+            if (user.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Iterable<Users> listExistsByUsername(String username) {
+        return userRepository.checkExistsByUsername(username);
+    }
+
+    public Boolean checkExistsByEmail(String email) {
+        Iterable<Users> users = userRepository.checkExistsByEmail(email);
+        for (Users user: users) {
+            if (user.getEmail().equals(email)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
     @Override
     public void remove(Long id) {
         userRepository.deleteById(id);
