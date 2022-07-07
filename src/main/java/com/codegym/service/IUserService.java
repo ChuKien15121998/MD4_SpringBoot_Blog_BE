@@ -2,6 +2,9 @@ package com.codegym.service;
 
 import com.codegym.model.Blog;
 import com.codegym.model.Users;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 public interface IUserService extends IGeneralService<Users> {
@@ -15,5 +18,9 @@ public interface IUserService extends IGeneralService<Users> {
     Boolean checkExistsByUsername(String username);
     Boolean checkExistsByEmail(String email);
     Iterable<Users> listExistsByUsername(String username);
+
+    Page<Users> findAll(Pageable pageable);
+
+    Optional<Users> findById(Long id);
 
 }

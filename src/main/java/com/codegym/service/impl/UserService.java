@@ -5,6 +5,8 @@ import com.codegym.model.Users;
 import com.codegym.repository.IUserRepository;
 import com.codegym.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -70,6 +72,10 @@ public class UserService implements IUserService {
 
     public Iterable<Users> listExistsByUsername(String username) {
         return userRepository.checkExistsByUsername(username);
+    }
+
+    public Page<Users> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public Boolean checkExistsByEmail(String email) {
