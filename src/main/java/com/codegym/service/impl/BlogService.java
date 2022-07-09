@@ -1,7 +1,7 @@
 package com.codegym.service.impl;
 
 import com.codegym.model.Blog;
-import com.codegym.model.Category;
+import com.codegym.model.CategoryBlog;
 import com.codegym.repository.IBlogRepository;
 import com.codegym.service.IBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +55,8 @@ public class BlogService implements IBlogService {
         return blogRepository.findAll(pageable);
     }
 
-    @Override
-    public Page<Blog> findAllByCategory(Category category, Pageable pageable) {
-        return blogRepository.findAllByCategory(category, pageable);
+    public Page<Blog> findAllByCategory(CategoryBlog categoryBlog, Pageable pageable) {
+        return null;
     }
 
     @Override
@@ -76,8 +75,8 @@ public class BlogService implements IBlogService {
     }
 
     @Override
-    public Iterable<Blog> findAllByCategory(Category category) {
-        return blogRepository.findAllByCategory(category);
+    public Iterable<Blog> findAllByCategoryBlog(CategoryBlog categoryBlog) {
+        return blogRepository.findAllByCategoryBlog(categoryBlog);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package com.codegym.controller;
 
 import com.codegym.model.Blog;
-import com.codegym.model.Category;
+import com.codegym.model.CategoryBlog;
 import com.codegym.service.IBlogService;
-import com.codegym.service.ICategoryService;
+import com.codegym.service.ICategoryBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +21,10 @@ public class BlogControllerRest {
     private IBlogService blogService;
 
     @Autowired
-    private ICategoryService categoryService;
+    private ICategoryBlogService categoryService;
 
     @ModelAttribute("category")
-    public Iterable<Category> categories(){
+    public Iterable<CategoryBlog> categories(){
         return categoryService.findAll();
     }
 

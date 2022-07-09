@@ -1,9 +1,9 @@
 package com.codegym.controller;
 
 import com.codegym.model.Blog;
-import com.codegym.model.Category;
+import com.codegym.model.CategoryBlog;
 import com.codegym.service.IBlogService;
-import com.codegym.service.ICategoryService;
+import com.codegym.service.ICategoryBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,17 +14,17 @@ import java.util.Optional;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/categories")
-public class CategoryControllerRest {
+public class CategoryBlogControllerRest {
 
     @Autowired
     private IBlogService blogService;
 
     @Autowired
-    private ICategoryService categoryService;
+    private ICategoryBlogService categoryService;
 
     @GetMapping
-    public ResponseEntity<Iterable<Category>> listCategory() {
-        Iterable<Category> categories = categoryService.findAll();
+    public ResponseEntity<Iterable<CategoryBlog>> listCategory() {
+        Iterable<CategoryBlog> categories = categoryService.findAll();
         if (categories != null) {
             return new ResponseEntity<>(categories, HttpStatus.OK);
         }
@@ -33,8 +33,8 @@ public class CategoryControllerRest {
 
     @GetMapping("/{id}/blogs")
     public ResponseEntity<Iterable<Blog>> findBlogsByCategory(@PathVariable Optional<String> id) {
-        Optional<Category> categoryOptional = categoryService.findById(Long.valueOf(id.get()));
-        Iterable<Blog> blogs = blogService.findAllByCategory(categoryOptional.get());
+        Optional<CategoryBlog> category_blog = categoryService.findById(Long.valueOf(id.get()));
+        Iterable<Blog> blogs = blogService.findAllByCategoryBlog(category_blog.get());
         return new ResponseEntity<>(blogs, HttpStatus.OK);
     }
 

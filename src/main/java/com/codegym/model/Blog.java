@@ -29,12 +29,12 @@ public class Blog {
         this.image = image;
     }
 
-    public Blog(String name, String email, Date date, String image, Category category) {
+    public Blog(String name, String email, Date date, String image, CategoryBlog categoryBlog) {
         this.name = name;
         this.email = email;
         this.date = date;
         this.image = image;
-        this.category = category;
+        this.categoryBlog = categoryBlog;
     }
 
     public Date getDate() {
@@ -45,18 +45,18 @@ public class Blog {
         this.date = date;
     }
 
-    public Blog(String name, String email, Date date, Category category) {
+    public Blog(String name, String email, Date date, CategoryBlog categoryBlog) {
         this.name = name;
         this.email = email;
         this.date = date;
-        this.category = category;
+        this.categoryBlog = categoryBlog;
     }
 
 
 
     @ManyToOne
     @JoinColumn (name = "category_id")
-    private Category category;
+    private CategoryBlog categoryBlog;
 
     public Blog() {
     }
@@ -68,18 +68,18 @@ public class Blog {
 
 
 
-    public Blog(String name, String email, Category category) {
+    public Blog(String name, String email, CategoryBlog categoryBlog) {
         this.name = name;
         this.email = email;
-        this.category = category;
+        this.categoryBlog = categoryBlog;
     }
 
-    public Category getCategory() {
-        return category;
+    public CategoryBlog getCategory() {
+        return categoryBlog;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategory(CategoryBlog categoryBlog) {
+        this.categoryBlog = categoryBlog;
     }
 
     public Long getId() {
