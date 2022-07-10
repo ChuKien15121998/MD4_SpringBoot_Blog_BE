@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
 @Repository
@@ -15,6 +17,14 @@ public interface IUserRepository extends JpaRepository<Users, Long> {
     Boolean existsByUsername(String username);
 
     Optional<Users> findById(Long id);
+
+    Users findByVerificationCode(String code);
+
+    Users findByEmail(String email);
+//
+//    void sendVerificationEmail(Users users, String siteURL) throws MessagingException, UnsupportedEncodingException;
+//
+//    Boolean verify(String verificationCode);
 
     @Query(value = "select * from users where username not like :username", nativeQuery = true)
     Iterable<Users> checkExistsByUsername(String username);

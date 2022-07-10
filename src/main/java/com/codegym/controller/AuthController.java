@@ -11,7 +11,9 @@ import com.codegym.security.jwt.JwtProvider;
 import com.codegym.security.userpincal.UserPrinciple;
 import com.codegym.service.impl.RoleService;
 import com.codegym.service.impl.UserService;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +23,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +45,7 @@ public class AuthController {
     JwtProvider jwtProvider;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> register(@Valid @RequestBody SignUpForm signUpForm){
+    public ResponseEntity<?> register(@Valid @RequestBody SignUpForm signUpForm, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         if(userService.existsByUsername(signUpForm.getUsername())){
             return new ResponseEntity<>(new ResponseMessage("no_user"), HttpStatus.OK);
         }
@@ -69,9 +74,29 @@ public class AuthController {
             }
         });
         users.setRoles(roles);
+        String randomCode = RandomString.make(64);
+        users.setVerificationCode(randomCode);
+        users.setEnabled(false);
         userService.save(users);
+        String siteURL = getSiteURL(request);
+        userService.sendVerificationEmail(users, siteURL);
         return new ResponseEntity<>(new ResponseMessage("yes"), HttpStatus.OK);
     }
+
+    private String getSiteURL(HttpServletRequest request) {
+        String siteURL = request.getRequestURL().toString();
+        return siteURL.replace(request.getServletPath(), "");
+    }
+
+    @GetMapping("/verify/{code}")
+    public ResponseEntity<?> verify(@PathVariable String code) {
+        if (userService.verify(code)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping("/signin")
     public ResponseEntity<?> login(@Valid @RequestBody SignInForm signInForm){
         Authentication authentication = authenticationManager.authenticate(

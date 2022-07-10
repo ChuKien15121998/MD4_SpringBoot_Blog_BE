@@ -5,6 +5,8 @@ import com.codegym.model.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
 public interface IUserService extends IGeneralService<Users> {
@@ -23,4 +25,11 @@ public interface IUserService extends IGeneralService<Users> {
 
     Optional<Users> findById(Long id);
 
+    Users findByVerificationCode(String code);
+
+    Users findByEmail(String email);
+
+//    void sendVerificationEmail(Users users, String siteURL) throws MessagingException, UnsupportedEncodingException;
+//
+//    Boolean verify(String verificationCode);
 }

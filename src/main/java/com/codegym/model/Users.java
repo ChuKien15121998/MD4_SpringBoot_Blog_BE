@@ -38,11 +38,40 @@ public class Users {
     private String password;
     @Lob
     private String avatar;
+
+    //Start_Email
+    @Column(name = "verification_code", length = 64)
+    private String verificationCode;
+    private boolean enabled;
+    //End_Email
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role> roles = new HashSet<>();
 
     public Users() {
+    }
+
+    public Users(Long id, String name, String username, String email, String password, String avatar, String verificationCode, boolean enabled, Set<Role> roles) {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.avatar = avatar;
+        this.verificationCode = verificationCode;
+        this.enabled = enabled;
+        this.roles = roles;
+    }
+
+    public Users(String name, String username, String email, String password, String avatar, String verificationCode, boolean enabled, Set<Role> roles) {
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.avatar = avatar;
+        this.verificationCode = verificationCode;
+        this.enabled = enabled;
+        this.roles = roles;
     }
 
     public Users(Long id, String name, String username, String email, String password, String avatar, Set<Role> roles) {
@@ -142,6 +171,22 @@ public class Users {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
