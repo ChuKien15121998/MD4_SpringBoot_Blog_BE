@@ -106,8 +106,12 @@ public class UserPrinciple implements UserDetails {
         return true;
     }
 
-    @Override
     public boolean isEnabled() {
-        return enabled;
+        return true;
     }
+
+//    @Override
+//    public boolean isEnabled() {
+//        return enabled;
+//    }
 }

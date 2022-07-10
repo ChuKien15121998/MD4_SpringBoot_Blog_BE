@@ -13,7 +13,6 @@ import com.codegym.service.impl.RoleService;
 import com.codegym.service.impl.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -102,9 +102,19 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signInForm.getUsername(), signInForm.getPassword())
         );
+        // Thêm đối tượng này vào security để xử lý tiếp
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Khởi tạo jwt từ đối tượng này
         String token = jwtProvider.createToken(authentication);
+        // Tạo đối tượng userprinciple từ authentication.getPrincipal
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
-        return ResponseEntity.ok(new JwtResponse(token, userPrinciple.getName(), userPrinciple.getUsername(),userPrinciple.getEmail(), userPrinciple.getAvatar(), userPrinciple.getAuthorities()));
+        Optional<Users> currentUser = userService.findByUsername(signInForm.getUsername());
+        if (!currentUser.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (currentUser.get().isEnabled()) {
+            return ResponseEntity.ok(new JwtResponse(token, userPrinciple.getName(), userPrinciple.getUsername(),userPrinciple.getEmail(), userPrinciple.getAvatar(), userPrinciple.getAuthorities()));
+        }
+        return new ResponseEntity<>(new ResponseMessage("Activate Email, Please!"), HttpStatus.OK);
     }
 }
